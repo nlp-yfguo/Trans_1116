@@ -2,13 +2,13 @@
 
 set -e -o pipefail -x
 
-export cachedir=/home/yfguo/Data_Cache/wmt15
-export dataid=encs_temp
+export cachedir=/home/yfguo/Data_Cache/
+export dataid=wmt18zhen
 
-export srcd=/home/yfguo/Data_Cache/wmt15/encs_temp
-export srctf=src.train.cs.tc
+export srcd=/home/yfguo/Data_Cache/wmt18zhen
+export srctf=src.train.zh.tc
 export tgttf=tgt.train.en.tc
-export srcvf=src.dev.cs.tc
+export srcvf=src.dev.zh.tc
 export tgtvf=tgt.dev.en.tc
 
 export vratio=0.2
@@ -17,9 +17,9 @@ export maxtokens=256
 
 export bpeops=32000
 export minfreq=8
-export share_bpe=true
+export share_bpe=false
 
-export tgtd=$cachedir/$dataid/rs
+export tgtd=$cachedir/$dataid/rs_6144_2
 
 mkdir -p $tgtd
 

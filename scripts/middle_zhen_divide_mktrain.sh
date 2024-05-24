@@ -4,19 +4,18 @@ set -e -o pipefail -x
 
 # take the processed data from scripts/bpe/mk|clean.sh and convert to tensor representation.
 
-export cachedir=/home/yfguo/Data_Cache/wmt15/
-export dataid=encs_1div3_cache_3072
-
+export cachedir=/home/yfguo/Data_Cache/wmt18zhendivide/
+export dataid=rs_3072
 export srcd=$cachedir/$dataid
-export srctf=src_low.txt
-export tgttf=tgt_low.txt
-export srcvf=src.dev.srt
-export tgtvf=tgt.dev.srt
+export srctf=src_middle.txt
+export tgttf=tgt_middle.txt
+export srcvf=src.dev.bpe
+export tgtvf=tgt.dev.bpe
 
-export rsf_train=low_train_3072.h5
-export rsf_dev=low_dev_3072.h5
+export rsf_train=train_middle.h5
+export rsf_dev=dev_middle.h5
 
-export share_vcb=true
+export share_vcb=false
 export vsize=65536
 
 export maxtokens=256

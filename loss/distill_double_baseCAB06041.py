@@ -24,8 +24,9 @@ class distillloss(_Loss):
         self.ignore_index, self.smoothing_value, self.reduction = ignore_index, label_smoothing / (
                 nclass - 1), reduction
         self.conf = 1.0 - label_smoothing - self.smoothing_value
-        self.A = 1
-        self.B = 0.5
+        self.C = 0.6
+        self.A = 0.4
+        self.B = 1
         self.nword = nclass
         self.softloss = torch.nn.KLDivLoss(reduction="sum")
         self.crossloss = torch.nn.CrossEntropyLoss(reduction="sum") # fastlabelsmothloss
@@ -33,8 +34,8 @@ class distillloss(_Loss):
         self.newloss = new_loss(reduction="sum")
 
 
-    def forward(self, cross_loss, teach_out_softmax_withoutT, stu_out_softmax_withoutT,
-                teach_out_sotfmax_byT, stu_out_sotfmax_byT, teach_out, stu_out, target, use_fast=True,use_new=True, mask=None, **kwargs):
+    def forward(self, cross_loss, high_teach_out_softmax_withoutT,teach_out_softmax_withoutT, stu_out_softmax_withoutT,
+                high_teach_out_sotfmax_byT,teach_out_sotfmax_byT, stu_out_sotfmax_byT, high_teach_out, teach_out, stu_out, target, use_fast=True,use_new=True,use_avg=True,mask=None, **kwargs):
         # 两个软标签
         input_tsize = list(teach_out.size())
         input_tsize[-1] = 1
@@ -77,10 +78,18 @@ class distillloss(_Loss):
         else:
             if use_new:
                 distill_loss = self.newloss(stu_out_softmax_withoutT, teach_out_softmax_withoutT)
-                _loss = student_loss * self.B + ((distill_loss / _teach_predict_useful) * total_batch_word_num) * self.A
+                high_distill_loss = self.newloss(stu_out_softmax_withoutT, high_teach_out_softmax_withoutT)
+                if use_avg:
+                    _loss = student_loss * self.B + ((distill_loss / _teach_predict_useful) * total_batch_word_num) * self.C + high_distill_loss * self.A
+                else:
+                    _loss = student_loss * self.B + distill_loss * self.C + high_distill_loss * self.A
             else:
                 distill_loss = self.softloss(stu_out_sotfmax_byT.log(), teach_out_sotfmax_byT.masked_fill(_mask, 0.0))
-                _loss = student_loss * self.B  + ((distill_loss / _teach_predict_useful) * total_batch_word_num) * self.A
+                high_distill_loss = self.softloss(stu_out_sotfmax_byT.log(), high_teach_out_sotfmax_byT.masked_fill(_mask, 0.0))
+                if use_avg:
+                    _loss = student_loss * self.B + ((distill_loss / _teach_predict_useful) * total_batch_word_num) * self.C + high_distill_loss * self.A
+                else:
+                    _loss = student_loss * self.B + distill_loss * self.C + high_distill_loss * self.A
         return _loss
 
 

@@ -24,7 +24,8 @@ disable_std_pemb = False
 use_fast_loss = True
 
 # configure maximum batch size w.r.t GPU memory
-max_tokens_gpu = 6144
+# max_tokens_gpu = 6144 * 2
+max_tokens_gpu = 3072
 max_sentences_gpu = max_tokens_gpu // 6
 max_pad_tokens_sentence = 32
 normal_tokens_vs_pad_tokens = 4
